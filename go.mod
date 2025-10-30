@@ -4,7 +4,10 @@ go 1.25.1
 
 require (
 	github.com/charmbracelet/lipgloss v1.1.0
+	github.com/manifoldco/promptui v0.9.0
 	github.com/muesli/termenv v0.16.0
+	github.com/opensdd/osdd-api/clients/go v0.4.0
+	github.com/opensdd/osdd-core v0.1.0
 	github.com/spf13/cobra v1.10.1
 	golang.org/x/term v0.36.0
 )
@@ -15,6 +18,7 @@ require (
 	github.com/charmbracelet/x/ansi v0.8.0 // indirect
 	github.com/charmbracelet/x/cellbuf v0.0.13-0.20250311204145-2c3ea96c31dd // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
+	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -23,4 +27,5 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	golang.org/x/sys v0.37.0 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 )
