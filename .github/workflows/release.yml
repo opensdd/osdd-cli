@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+env:
+  GO_VERSION: '1.25.1'
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: true
+          cache: true
+
+      - name: Build cross-platform binaries
+        env:
+          VERSION: ${{ inputs.version }}
+          OUTPUT_DIR: out
+        run: |
+          ./scripts/build.sh
+          ls -lh out/
+
+      - name: Verify artifacts exist
+        run: |
+          test -f out/osdd-linux-amd64
+          test -f out/osdd-linux-arm64
+          test -f out/osdd-darwin-amd64
+          test -f out/osdd-darwin-arm64
+          test -f out/osdd-windows-amd64.exe
+          test -f out/osdd-windows-arm64.exe
+          echo "All six artifacts present."
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: Release ${{ inputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            out/osdd-*
+          body: |
+            ### OpenSDD CLI ${{ inputs.version }}
+
+            Download the appropriate binary for your platform:
+            - Linux (amd64): `osdd-linux-amd64`
+            - Linux (arm64): `osdd-linux-arm64`
+            - macOS (amd64): `osdd-darwin-amd64`
+            - macOS (arm64): `osdd-darwin-arm64`
+            - Windows (amd64): `osdd-windows-amd64.exe`
+            - Windows (arm64): `osdd-windows-arm64.exe`
+
+            Verify version:
+            - Linux/macOS: `chmod +x ./osdd-<os>-<arch> && ./osdd-<os>-<arch> version`
+            - Windows: `.\osdd-windows-<arch>.exe version`
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
