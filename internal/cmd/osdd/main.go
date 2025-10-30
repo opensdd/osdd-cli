@@ -19,7 +19,7 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(version.VersionCmd())
+	rootCmd.AddCommand(version.Cmd())
 	rootCmd.AddCommand(recipe.Cmd)
 
 	// Custom handling for unknown commands

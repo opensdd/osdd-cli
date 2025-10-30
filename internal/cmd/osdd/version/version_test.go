@@ -12,11 +12,11 @@ func TestGetVersion_WhenVersionIsEmpty(t *testing.T) {
 	// Set Version to empty string
 	Version = ""
 
-	got := GetVersion()
+	got := Get()
 	want := "dev"
 
 	if got != want {
-		t.Errorf("GetVersion() = %q; want %q", got, want)
+		t.Errorf("Get() = %q; want %q", got, want)
 	}
 }
 
@@ -28,11 +28,11 @@ func TestGetVersion_WhenVersionIsSet(t *testing.T) {
 	// Set Version to a specific value
 	Version = "v1.2.3"
 
-	got := GetVersion()
+	got := Get()
 	want := "v1.2.3"
 
 	if got != want {
-		t.Errorf("GetVersion() = %q; want %q", got, want)
+		t.Errorf("Get() = %q; want %q", got, want)
 	}
 }
 
