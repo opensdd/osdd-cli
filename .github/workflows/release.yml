@@ -34,18 +34,21 @@ jobs:
           VERSION: ${{ inputs.version }}
           OUTPUT_DIR: out
         run: |
+          sudo apt-get update
+          sudo apt-get install -y zip
           ./scripts/build.sh
           ls -lh out/
 
-      - name: Verify artifacts exist
+      - name: Verify release artifacts exist
         run: |
-          test -f out/osdd-linux-amd64
-          test -f out/osdd-linux-arm64
-          test -f out/osdd-darwin-amd64
-          test -f out/osdd-darwin-arm64
-          test -f out/osdd-windows-amd64.exe
-          test -f out/osdd-windows-arm64.exe
-          echo "All six artifacts present."
+          test -f out/osdd-linux-amd64.tar.gz
+          test -f out/osdd-linux-arm64.tar.gz
+          test -f out/osdd-darwin-amd64.tar.gz
+          test -f out/osdd-darwin-arm64.tar.gz
+          test -f out/osdd-windows-amd64.zip
+          test -f out/osdd-windows-arm64.zip
+          test -f out/checksums.txt
+          echo "All archives and checksums present."
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -55,20 +58,31 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            out/osdd-*
+            out/osdd-*.tar.gz
+            out/osdd-*.zip
+            out/checksums.txt
           body: |
             ### OpenSDD CLI ${{ inputs.version }}
 
-            Download the appropriate binary for your platform:
-            - Linux (amd64): `osdd-linux-amd64`
-            - Linux (arm64): `osdd-linux-arm64`
-            - macOS (amd64): `osdd-darwin-amd64`
-            - macOS (arm64): `osdd-darwin-arm64`
-            - Windows (amd64): `osdd-windows-amd64.exe`
-            - Windows (arm64): `osdd-windows-arm64.exe`
+            Download the appropriate archive for your platform:
+            - Linux (amd64): `osdd-linux-amd64.tar.gz`
+            - Linux (arm64): `osdd-linux-arm64.tar.gz`
+            - macOS (amd64): `osdd-darwin-amd64.tar.gz`
+            - macOS (arm64): `osdd-darwin-arm64.tar.gz`
+            - Windows (amd64): `osdd-windows-amd64.zip`
+            - Windows (arm64): `osdd-windows-arm64.zip`
 
             Verify version:
-            - Linux/macOS: `chmod +x ./osdd-<os>-<arch> && ./osdd-<os>-<arch> version`
-            - Windows: `.\osdd-windows-<arch>.exe version`
+            - Linux/macOS:
+              1) `tar -xzf osdd-<os>-<arch>.tar.gz`
+              2) `chmod +x ./osdd-<os>-<arch>`
+              3) `./osdd-<os>-<arch> version`
+            - Windows:
+              1) `unzip osdd-windows-<arch>.zip` (or use File Explorer to extract)
+              2) `./osdd-windows-<arch>.exe version`
+
+            Checksums:
+            - A `checksums.txt` file is attached containing SHA-256 sums for all archives.
+            - Verify on Linux/macOS: `shasum -a 256 -c checksums.txt | grep osdd-<os>-<arch>`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

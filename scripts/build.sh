@@ -77,6 +77,67 @@ if [ "$fail" -ne 0 ]; then
 fi
 
 echo "All builds completed. Artifacts are in $OUTPUT_DIR"
-echo "Examples:"
-echo "  $OUTPUT_DIR/${APP_NAME}-darwin-arm64"
-echo "  $OUTPUT_DIR/${APP_NAME}-windows-amd64.exe"
+
+# Create archives and checksums similar to the provided example
+cd "$OUTPUT_DIR"
+
+echo "Creating archives..."
+# Archive binaries: tar.gz for linux/darwin, zip for windows
+for t in "${TARGETS[@]}"; do
+  IFS=: read -r os arch <<<"$t"
+  ext=""
+  if [ "$os" = "windows" ]; then
+    ext=".exe"
+  fi
+  bin="${APP_NAME}-${os}-${arch}${ext}"
+
+  if [ ! -f "$bin" ]; then
+    echo "Warning: missing binary $bin, skipping archive"
+    continue
+  fi
+
+  if [ "$os" = "windows" ]; then
+    # Windows -> zip
+    if command -v zip >/dev/null 2>&1; then
+      zip "${APP_NAME}-${os}-${arch}.zip" "$bin"
+      # remove the original .exe after archiving (like the example)
+      rm -f "$bin"
+    else
+      echo "Warning: zip command not found, skipping Windows archive for $bin"
+    fi
+  else
+    # linux/darwin -> tar.gz
+    tar -czf "${APP_NAME}-${os}-${arch}.tar.gz" "$bin"
+  fi
+
+done
+
+# Update checksums to include archives only
+shopt -s nullglob
+archives=( *.tar.gz *.zip )
+if [ ${#archives[@]} -gt 0 ]; then
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "${archives[@]}" > checksums.txt
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "${archives[@]}" > checksums.txt
+  else
+    echo "Warning: neither sha256sum nor shasum found, skipping checksums"
+  fi
+else
+  echo "Warning: no archives were created, skipping checksums"
+fi
+shopt -u nullglob
+
+# Remove original non-windows binaries after archiving
+echo "Removing original binaries..."
+for t in "${TARGETS[@]}"; do
+  IFS=: read -r os arch <<<"$t"
+  if [ "$os" != "windows" ]; then
+    bin="${APP_NAME}-${os}-${arch}"
+    rm -f "$bin"
+  fi
+  # windows binaries were removed right after zipping
+
+done
+
+echo "Archives created successfully in $(pwd)"
