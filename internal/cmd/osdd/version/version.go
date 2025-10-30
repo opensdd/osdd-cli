@@ -1,6 +1,11 @@
 package version
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+
+	"github.com/opensdd/osdd-cli/internal/ui"
+	"github.com/spf13/cobra"
+)
 
 // Version is set via ldflags at build time
 // Usage: go build -ldflags "-X 'github.com/opensdd/osdd-cli/internal/version.Version=v1.0.0'"
@@ -22,15 +27,21 @@ func IsSet() bool {
 // VersionCmd returns the Cobra command for the version subcommand.
 //
 // The printFunc parameter is called with the version string to display output.
-// Typically this is ui.PrintVersion which handles animated ASCII art rendering.
 // The function never returns an error - version display always succeeds.
-func VersionCmd(printFunc func(string)) *cobra.Command {
+func VersionCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "Display the version of osdd",
 		Long:  "Display the version of osdd with ASCII art",
 		Run: func(cmd *cobra.Command, args []string) {
-			printFunc(GetVersion())
+			ui.PrintLogo()
+			version := GetVersion()
+			// Print version
+			fmt.Printf("\nOpenSDD CLI version %s\n", version)
+
+			if version == "dev" {
+				fmt.Println("WARNING: Version not set at build time")
+			}
 		},
 	}
 }

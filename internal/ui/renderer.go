@@ -27,7 +27,7 @@ func canRenderColored() bool {
 }
 
 // renderPlainASCII renders plain ASCII art without animation
-func renderPlainASCII(version string) {
+func renderPlainASCII() {
 	asciiArt := `
    ___                   ____  ____  ____
   / _ \ _ __   ___ _ __ / ___||  _ \|  _ \
@@ -37,15 +37,10 @@ func renderPlainASCII(version string) {
        |_|
 `
 	fmt.Print(asciiArt)
-	fmt.Printf("\nOpenSDD CLI version %s\n", version)
-
-	if version == "dev" {
-		fmt.Println("WARNING: Version not set at build time")
-	}
 }
 
 // renderRainbowASCII renders static ASCII art with rainbow colors
-func renderRainbowASCII(version string) {
+func renderRainbowASCII() {
 	asciiArt := []string{
 		"   ___                   ____  ____  ____  ",
 		"  / _ \\ _ __   ___ _ __ / ___||  _ \\|  _ \\ ",
@@ -64,13 +59,6 @@ func renderRainbowASCII(version string) {
 			fmt.Print(style.Render(string(ch)))
 		}
 		fmt.Println()
-	}
-
-	// Print version
-	fmt.Printf("\nOpenSDD CLI version %s\n", version)
-
-	if version == "dev" {
-		fmt.Println("WARNING: Version not set at build time")
 	}
 }
 
@@ -101,34 +89,11 @@ func rainbowColor(position, total int) lipgloss.Color {
 	return lipgloss.Color(rainbow[colorIndex])
 }
 
-// PrintVersion displays the version with ASCII art in rainbow colors when supported.
-//
-// The function automatically detects terminal capabilities and renders either:
-//   - Rainbow-colored ASCII art (when TTY with ANSI256+ colors)
-//   - Plain ASCII art (when piped, in CI/CD, or limited terminal support)
-//
-// Behavior is controlled by:
-//   - NO_COLOR environment variable (disables colors when set)
-//   - TTY detection (requires stdout to be a terminal)
-//   - Color profile detection (requires ANSI256+ color support)
-//
-// If rendering panics (rare), the function automatically falls back to plain
-// rendering and logs a warning to stderr. This function never returns an error
-// and always produces output.
-func PrintVersion(version string) {
-	// Panic recovery for rendering errors
-	defer func() {
-		if r := recover(); r != nil {
-			// Log the panic for debugging visibility
-			fmt.Fprintf(os.Stderr, "Warning: Rainbow rendering failed (%v), falling back to plain rendering\n", r)
-			renderPlainASCII(version)
-		}
-	}()
-
+func PrintLogo() {
 	if canRenderColored() {
-		renderRainbowASCII(version)
+		renderRainbowASCII()
 	} else {
-		renderPlainASCII(version)
+		renderPlainASCII()
 	}
 }
 
@@ -139,5 +104,3 @@ func abs(x int) int {
 	}
 	return x
 }
-
-// Note: max() and min() are builtin functions in Go 1.21+, no custom implementation needed

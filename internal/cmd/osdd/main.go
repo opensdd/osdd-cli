@@ -5,7 +5,6 @@ import (
 
 	"github.com/opensdd/osdd-cli/internal/cmd/osdd/recipe"
 	"github.com/opensdd/osdd-cli/internal/cmd/osdd/version"
-	"github.com/opensdd/osdd-cli/internal/ui"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +19,7 @@ func main() {
 		},
 	}
 
-	rootCmd.AddCommand(version.VersionCmd(ui.PrintVersion))
+	rootCmd.AddCommand(version.VersionCmd())
 	rootCmd.AddCommand(recipe.Cmd)
 
 	// Custom handling for unknown commands

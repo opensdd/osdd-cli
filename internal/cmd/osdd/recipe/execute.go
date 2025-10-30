@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/opensdd/osdd-cli/internal/inputs"
+	"github.com/opensdd/osdd-cli/internal/ui"
 	"github.com/opensdd/osdd-core/core/fetcher"
 	"github.com/spf13/cobra"
 )
@@ -19,7 +20,8 @@ func createExecuteCmd() *cobra.Command {
 		Use:   "execute",
 		Short: "Executes a recipe by its ID",
 		Run: func(_ *cobra.Command, _ []string) {
-			//ctx := context.Background()
+			ui.PrintLogo()
+			fmt.Println()
 			gh := &fetcher.GitHub{}
 			recipe, err := gh.FetchRecipe(recipeID)
 			check(err)
