@@ -3,24 +3,13 @@ package inputs
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
-	"github.com/manifoldco/promptui"
+	"github.com/charmbracelet/huh"
 	"github.com/opensdd/osdd-api/clients/go/osdd/recipes"
 )
 
-// askDefault uses promptui to ask the question with validation.
-func askDefault(label string, validate func(string) error) (string, error) {
-	p := promptui.Prompt{Label: label, Validate: validate}
-	return p.Run()
-}
-
 type User struct {
-	// askFn is a dependency-injected function used to ask the user for input.
-	// It should return the entered value or an error. When nil, a default
-	// implementation backed by promptui is used.
-	askFn func(label string, validate func(string) error) (string, error)
 }
 
 // Request requests user input for user inputs configured in the recipe's context.
@@ -92,10 +81,8 @@ func (u *User) promptForUserInput(ctx context.Context, src *recipes.UserInputCon
 		return map[string]string{}, nil
 	}
 
-	ask := u.askFn
-	if ask == nil {
-		ask = askDefault
-	}
+	var inputs []huh.Field
+	results := make(map[string]*string)
 
 	answers := make(map[string]string)
 	for _, p := range src.GetEntries() {
@@ -103,38 +90,33 @@ func (u *User) promptForUserInput(ctx context.Context, src *recipes.UserInputCon
 			continue
 		}
 
-		name := p.GetName()
-		desc := p.GetDescription()
-		optional := p.GetOptional()
-
-		label := name
-		if desc != "" {
-			label = fmt.Sprintf("%s (%s)", name, desc)
-		}
-
 		validate := func(input string) error {
-			if !optional && strings.TrimSpace(input) == "" {
-				return errors.New("required")
+			if p.GetOptional() || strings.TrimSpace(input) != "" {
+				return nil
 			}
-			return nil
+			return errors.New("required")
 		}
 
-		// respect cancellation if provided
-		select {
-		case <-ctx.Done():
-			return answers, ctx.Err()
-		default:
-		}
+		v := ""
+		in := huh.NewInput().
+			Title(p.GetName()).
+			Description(p.GetDescription()).
+			Prompt("?").
+			Validate(validate).
+			Value(&v)
+		results[p.GetName()] = &v
+		inputs = append(inputs, in)
+	}
 
-		result, err := ask(label, validate)
-		if err != nil {
-			return answers, err
+	err := huh.NewForm(huh.NewGroup(inputs...)).RunWithContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range results {
+		val := *v
+		if val != "" {
+			answers[k] = val
 		}
-		if strings.TrimSpace(result) == "" {
-			// optional and skipped
-			continue
-		}
-		answers[name] = result
 	}
 
 	return answers, nil
