@@ -23,7 +23,7 @@ fi
 
 # ldflags for version injection (preserve user-provided LDFLAGS)
 USER_LDFLAGS="${LDFLAGS:-}"
-LDFLAGS="${USER_LDFLAGS} -X ${PACKAGE}/internal/version.Version=${VERSION}"
+LDFLAGS="${USER_LDFLAGS} -X ${PACKAGE}/internal/cmd/osdd/version.Version=${VERSION}"
 
 # Target platforms
 TARGETS=(
