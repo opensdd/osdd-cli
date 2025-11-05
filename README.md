@@ -23,7 +23,7 @@ sequenceDiagram
     CLI->>User: Prompt for required inputs
     CLI->>API: Prefetch context & assets
     CLI->>Workspace: Materialize files & commands
-    CLI->>User: Stream execution progress
+    CLI->>User: Start AI-enabled IDE
 ```
 
 ---
