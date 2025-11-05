@@ -33,8 +33,7 @@ sequenceDiagram
 ### Option 1: Homebrew (macOS & Linux)
 
 ```bash
-brew tap opensdd/tap
-brew install osdd
+brew install opensdd/tap/osdd
 
 # verify
 osdd version
