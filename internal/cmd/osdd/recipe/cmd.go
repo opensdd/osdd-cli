@@ -1,6 +1,9 @@
 package recipe
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -20,6 +23,7 @@ func create() *cobra.Command {
 
 func check(err error) {
 	if err != nil {
-		panic(err)
+		_, _ = fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
 	}
 }

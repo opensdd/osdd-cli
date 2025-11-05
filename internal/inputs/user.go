@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/huh"
+	"github.com/opensdd/osdd-api/clients/go/osdd"
 	"github.com/opensdd/osdd-api/clients/go/osdd/recipes"
 )
 
@@ -98,14 +99,23 @@ func (u *User) promptForUserInput(ctx context.Context, src *recipes.UserInputCon
 		}
 
 		v := ""
-		in := huh.NewInput().
-			Title(p.GetName()).
-			Description(p.GetDescription()).
-			Prompt("?").
-			Validate(validate).
-			Value(&v)
+		var field huh.Field
+		switch p.WhichType() {
+		case osdd.UserInputParameter_Text_case:
+			field = huh.NewText().
+				Title(p.GetName()).
+				Description(p.GetDescription()).
+				Validate(validate).
+				Value(&v)
+		default:
+			field = huh.NewInput().
+				Title(p.GetName()).
+				Description(p.GetDescription()).
+				Validate(validate).
+				Value(&v)
+		}
 		results[p.GetName()] = &v
-		inputs = append(inputs, in)
+		inputs = append(inputs, field)
 	}
 
 	err := huh.NewForm(huh.NewGroup(inputs...)).RunWithContext(ctx)
