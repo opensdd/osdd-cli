@@ -14,6 +14,7 @@ import (
 	"github.com/opensdd/osdd-core/core"
 	"github.com/opensdd/osdd-core/core/executable"
 	"github.com/opensdd/osdd-core/core/fetcher"
+	"github.com/opensdd/osdd-core/core/utils"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v3"
@@ -56,6 +57,8 @@ func createExecuteCmd() *cobra.Command {
 				recipe, err = gh.FetchRecipe(source)
 			}
 			check(err)
+			// TODO: need to make it more flexible.
+			utils.AllowedCommands = []string{"git", "devplan"}
 
 			userIn := &inputs.User{}
 			ctx := context.Background()
