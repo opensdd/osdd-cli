@@ -79,8 +79,10 @@ In a nutshell, this command:
 4. Downloaded all the context files and commands into the workspace.
 5. Launched `codex` with the instruction to run `/astro_run` command, which maps to [this prompt](https://github.com/opensdd/recipes/blob/main/global/astro_site/resources/run.md).
 
+
 After a while, the `codex` was done and the website was generated and after a couple tweaks, it was published and here
 it is!
+
 ---
 
 ## Quick Start
