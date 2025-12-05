@@ -1,0 +1,42 @@
+entryPoint:
+  start:
+    command: docusaurus_run
+  workspace:
+    enabled: true
+    path: tmp/
+    relativeToWorkingDir: true
+recipe:
+  context:
+    entries:
+      - path: specs/docusaurus_site/deploy-site.yml
+        from:
+          github:
+            path: "https://github.com/opensdd/recipes/global/docusaurus_site/resources/deploy-site.yml"
+  ide:
+    permissions:
+      allow:
+        - bash: "git clone:*"
+        - bash: "npx create-docusaurus@latest*"
+        - network: true
+    commands:
+      entries:
+        - name: docusaurus_prepare
+          from:
+            github:
+              path: "https://github.com/opensdd/recipes/global/docusaurus_site/resources/prepare.md"
+        - name: docusaurus_collect
+          from:
+            github:
+              path: "https://github.com/opensdd/recipes/global/docusaurus_site/resources/collect.md"
+        - name: docusaurus_plan
+          from:
+            github:
+              path: "https://github.com/opensdd/recipes/global/docusaurus_site/resources/plan.md"
+        - name: docusaurus_generate
+          from:
+            github:
+              path: "https://github.com/opensdd/recipes/global/docusaurus_site/resources/generate.md"
+        - name: docusaurus_run
+          from:
+            github:
+              path: "https://github.com/opensdd/recipes/global/docusaurus_site/resources/run.md"

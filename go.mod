@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/huh v0.8.0
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/muesli/termenv v0.16.0
-	github.com/opensdd/osdd-api/clients/go v0.5.3
+	github.com/opensdd/osdd-api/clients/go v0.5.8
 	github.com/opensdd/osdd-core v0.2.1
 	github.com/spf13/cobra v1.10.1
 	golang.org/x/term v0.36.0
@@ -43,3 +43,5 @@ require (
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 )
+
+replace github.com/opensdd/osdd-core => /Users/tonek/code/osdd/osdd-core

@@ -27,6 +27,8 @@ var (
 func createExecuteCmd() *cobra.Command {
 	var ideType string
 	var recipeFile string
+	var launchInstructionsFile string
+	var idePaths []string
 	cmd := &cobra.Command{
 		Use:   "execute [recipe-id]",
 		Short: "Executes a recipe by its ID. Optionally use --recipe-file to run from a local file (testing/debugging)",
@@ -35,10 +37,8 @@ func createExecuteCmd() *cobra.Command {
 			ui.PrintLogo()
 			fmt.Println()
 
-			var (
-				recipe *recipes.ExecutableRecipe
-				err    error
-			)
+			var recipe *recipes.ExecutableRecipe
+			var err error
 			if len(args) == 0 {
 				check(fmt.Errorf("missing recipe ID: provide an ID or use --recipe-file"))
 				return
@@ -71,24 +71,53 @@ func createExecuteCmd() *cobra.Command {
 			if recipe.GetEntryPoint().GetIdeType() == "" {
 				recipe.GetEntryPoint().SetIdeType(ideType)
 			}
+			idePathsMap := map[string]string{}
+			for _, p := range idePaths {
+				kv := strings.SplitN(p, "=", 2)
+				if len(kv) != 2 {
+					check(fmt.Errorf("invalid ide path %v: expected format -p ide_type=<path>", p))
+				}
+				idePathsMap[kv[0]] = kv[1]
+			}
 			genCtx := &core.GenerationContext{
-				UserInput:  in,
-				ExecRecipe: recipe,
+				UserInput:     in,
+				ExecRecipe:    recipe,
+				IDEPaths:      idePathsMap,
+				OutputCMDOnly: launchInstructionsFile != "",
 			}
 			materialized, err := execRecipe.Materialize(ctx, genCtx)
 			check(err)
-			basePath := "."
+			basePath := ""
 			if wsPath := materialized.GetWorkspacePath(); wsPath != "" {
 				basePath = wsPath
+			} else {
+				basePath, err = filepath.Abs(".")
+				check(err)
 			}
+
 			fmt.Printf("Storing into %v\n", basePath)
-			check(execRecipe.Execute(ctx, genCtx))
+			res, err := execRecipe.Execute(ctx, genCtx)
+			check(err)
+			check(writeLaunchOutput(launchInstructionsFile, res))
 		},
 	}
 	cmd.Flags().StringVarP(&ideType, "ide", "i", "", "Name of the IDE")
 	cmd.Flags().StringVarP(&recipeFile, "recipe-file", "f", "", "Path to a local recipe file (YAML or JSON). When set, the recipe ID argument is ignored.")
+	cmd.Flags().StringVarP(&launchInstructionsFile, "launch-instructions", "l", "", "Path to a file where launch instructions should be written to. If this parameter is provided, then the CLI will not execute the recipe, but will output the launch details instead into that file.")
+	cmd.Flags().StringSliceVarP(&idePaths, "ide-paths", "p", nil, "Paths to ide executables in format `-p codex=<codex_path> -p claude=<claude_path>`")
 	_ = cmd.MarkFlagRequired("ide")
 	return cmd
+}
+func writeLaunchOutput(outFile string, res executable.RecipeExecutionResult) error {
+	if outFile == "" || res.LaunchResult.LaunchDetails == nil {
+		return nil
+	}
+	m := protojson.MarshalOptions{Indent: "  "}
+	b, err := m.Marshal(res.LaunchResult.LaunchDetails)
+	if err != nil {
+		return fmt.Errorf("failed to marshal launch details: %w", err)
+	}
+	return os.WriteFile(outFile, b, 0644)
 }
 
 func loadRecipeFromFile(path string) (*recipes.ExecutableRecipe, error) {

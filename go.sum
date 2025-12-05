@@ -70,10 +70,8 @@ github.com/muesli/cancelreader v0.2.2 h1:3I4Kt4BQjOR54NavqnDogx/MIoWBFa0StPA8ELU
 github.com/muesli/cancelreader v0.2.2/go.mod h1:3XuTXfFS2VjM+HTLZY9Ak0l6eUKfijIfMUZ4EgX0QYo=
 github.com/muesli/termenv v0.16.0 h1:S5AlUN9dENB57rsbnkPyfdGuWIlkmzJjbFf0Tf5FWUc=
 github.com/muesli/termenv v0.16.0/go.mod h1:ZRfOIKPFDYQoDFF4Olj7/QJbW60Ol/kL1pU3VfY/Cnk=
-github.com/opensdd/osdd-api/clients/go v0.5.3 h1:conkSStgDrfIX+w8LHKktTW2hK3GxedWt4Y0fjBnjPg=
-github.com/opensdd/osdd-api/clients/go v0.5.3/go.mod h1:0L6wj1ps4wBPLjtKyF5vsGRiKZOT+gAG3I71KgPIxBk=
-github.com/opensdd/osdd-core v0.2.1 h1:kxwc2CGmqSZwkGV5NO1XrnHvdIAHP6jK9i589Jjvs9I=
-github.com/opensdd/osdd-core v0.2.1/go.mod h1:RTUYRYT8KdrdGr7sLOEgySVU+15FZZndIS75x8PPGdQ=
+github.com/opensdd/osdd-api/clients/go v0.5.8 h1:19483eGC185hodjARegBb9qIDm8QYRVM9u2ZjXbdxCA=
+github.com/opensdd/osdd-api/clients/go v0.5.8/go.mod h1:0L6wj1ps4wBPLjtKyF5vsGRiKZOT+gAG3I71KgPIxBk=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rivo/uniseg v0.2.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
